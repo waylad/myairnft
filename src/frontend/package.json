@@ -12,6 +12,7 @@
     "import-shared": "rm -Rf src/shared && cp -R ../api/src/shared src/shared"
   },
   "dependencies": {
+    "@hashgraph/sdk": "^2.16.6",
     "axios": "^0.27.2",
     "dayjs": "^1.10.7",
     "hashconnect": "0.1.9",

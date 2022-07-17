@@ -25,22 +25,14 @@ export const Home = () => {
   }
 
   return (
-    <div onClick={handleConnect}>
-      topic {topic}
-    </div>
-    // <>
-    //   {ready ? (
-    //     <Navigate to="/my-nft" replace />
-    //   ) : (
-    //     <HomeView
-    //       loading={loading}
-    //       accountPkh={accountPkh}
-    //       wallet={wallet}
-    //       ready={ready}
-    //       handleConnect={handleConnect}
-    //       handleNewConnect={handleNewConnect}
-    //     />
-    //   )}
-    // </>
+    <>
+      {pairingString ? (
+        <Navigate to="/my-nft" replace />
+      ) : (
+        <HomeView
+          handleConnect={handleConnect}
+        />
+      )}
+    </>
   )
 }

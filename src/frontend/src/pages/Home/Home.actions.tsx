@@ -27,6 +27,12 @@ export const connect = () =>
 
     try {
       hashconnect = new HashConnect();
+      hashconnect.pairingEvent.once((pairingData) => {
+        pairingData.accountIds.forEach(id => {
+            console.log('id', id)
+        })
+      })
+    
       console.log('Connecting...')
 
       if (!(state.wallet.privateKey && state.wallet.topic && state.wallet.pairedWalletData)) {
@@ -37,10 +43,10 @@ export const connect = () =>
         const pairingString = hashconnect.generatePairingString(state, "testnet", true);
         hashconnect.findLocalWallets();
         hashconnect.connectToLocalWallet(pairingString);
-
+      
         dispatch({
           type: CONNECT,
-          privateKey:  initData.privKey,
+          privateKey: initData.privKey,
           topic: state.topic,
           pairingString
         })

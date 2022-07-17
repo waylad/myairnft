@@ -1,3 +1,4 @@
+import { CustomFee, CustomFixedFee, CustomFractionalFee, CustomRoyaltyFee, Hbar, HbarUnit, PublicKey, TokenCreateTransaction, TokenSupplyType, TokenType, TransactionReceipt } from '@hashgraph/sdk';
 import { showToaster } from 'app/App.components/Toaster/Toaster.actions'
 import { ERROR, SUCCESS } from 'app/App.components/Toaster/Toaster.constants'
 import { State } from 'reducers'
@@ -63,3 +64,56 @@ export const mint = (city: string) => async (dispatch: any, getState: any) => {
     })
   }
 }
+
+
+export const CREATE_REQUEST = 'CREATE_REQUEST'
+export const CREATE_RESULT = 'CREATE_RESULT'
+export const CREATE_ERROR = 'CREATE_ERROR'
+export const create = () => async (dispatch: any, getState: any) => {
+  const state: State = getState()
+
+  try {
+    dispatch({
+      type: CREATE_REQUEST,
+    })
+
+    const tokenData = {
+      name: "AIR NFT",
+      symbol: "AIR",
+      type: TokenType.NonFungibleUnique,
+      supplyType: TokenSupplyType.Infinite,
+      initialSupply: 0,
+      maxSupply: 10000,
+      includeRoyalty: false,
+      includeFixedFee: false,
+      includeFractionalFee: false,
+      royaltyPercent: 0,
+      fixedFee: 0,
+      fixedTokenId: "",
+      fractionalFee: {
+          percent: 0,
+          max: 0,
+          min: 0
+      },
+      fallbackFee: 0,
+      decimals: 0
+  }
+
+
+    dispatch(showToaster(SUCCESS, 'Token Created', 'Enjoy!'))
+
+    dispatch({
+      type: CREATE_RESULT,
+    })
+  } catch (error: any) {
+    console.error(error)
+    dispatch(showToaster(ERROR, 'Error', error.message))
+    dispatch({
+      type: CREATE_ERROR,
+      error,
+    })
+  }
+}
+
+
+

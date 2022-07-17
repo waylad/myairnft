@@ -2,7 +2,7 @@
   "name": "myairnft.com-dapp",
   "version": "1.0.0",
   "scripts": {
-    "start": "PORT=3000 NODE_ENV=development REACT_APP_BACKEND_URL=http://localhost:8080 react-scripts -r @cypress/instrument-cra start && open http://localhost:3000",
+    "start": "HTTPS=true PORT=3000 NODE_ENV=development REACT_APP_BACKEND_URL=https://localhost:8080 react-scripts -r @cypress/instrument-cra start && open https://localhost:3000",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "analyze": "react-scripts build && source-map-explorer 'build/static/js/*.js'",

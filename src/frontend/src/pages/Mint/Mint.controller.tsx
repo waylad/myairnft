@@ -10,20 +10,17 @@ import { MintView } from './Mint.view'
 export const Mint = () => {
   const dispatch = useDispatch()
   const loading = useSelector((state: State) => state.loading)
-  // const { accountPkh } = useSelector((state: State) => state.wallet)
+  const { pairedAccounts } = useSelector((state: State) => state.wallet)
 
   const mintCallback = (city: string) => {
-    if (city) dispatch(mint(city))
-    else dispatch(showToaster(ERROR, 'Incorrect City', 'Please retry'))
+    dispatch(create())
+    // if (city) dispatch(mint(city))
+    // else dispatch(showToaster(ERROR, 'Incorrect City', 'Please retry'))
   }
 
   const connectCallback = () => {
     dispatch(connect())
   }
 
-  const createCallback = () => {
-    dispatch(create())
-  }
-
-  return <MintView mintCallback={mintCallback} connectCallback={connectCallback} loading={loading} accountPkh={'test'} />
+  return <MintView mintCallback={mintCallback} connectCallback={connectCallback} loading={loading} pairedAccounts={pairedAccounts} />
 }

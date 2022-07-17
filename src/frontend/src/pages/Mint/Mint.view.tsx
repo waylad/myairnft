@@ -10,10 +10,10 @@ type MintViewProps = {
   mintCallback: (city: string) => void
   connectCallback: () => void
   loading: boolean
-  accountPkh?: string
+  pairedAccounts?: string[]
 }
 
-export const MintView = ({ mintCallback, connectCallback, loading, accountPkh }: MintViewProps) => {
+export const MintView = ({ mintCallback, connectCallback, loading, pairedAccounts }: MintViewProps) => {
   const [city, setCity] = useState('')
 
   return (
@@ -35,7 +35,7 @@ export const MintView = ({ mintCallback, connectCallback, loading, accountPkh }:
           type="text"
           onChange={(e: any) => setCity(e.target.value)}
           value={city}
-          onBlur={() => {}}
+          onBlur={() => { }}
           inputStatus={undefined}
           errorMessage={undefined}
         />
@@ -44,7 +44,7 @@ export const MintView = ({ mintCallback, connectCallback, loading, accountPkh }:
           <div>Loading...</div>
         ) : (
           <>
-            {accountPkh ? (
+            {pairedAccounts && pairedAccounts?.length > 0 ? (
               <img onClick={() => mintCallback(getSlug(city))} alt="button-mint" src="/button-mint.svg" />
             ) : (
               <img onClick={() => connectCallback()} alt="button-connect" src="/button-connect.svg" />

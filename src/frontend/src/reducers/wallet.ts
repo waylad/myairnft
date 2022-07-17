@@ -1,14 +1,17 @@
-import { CONNECT, SET_WALLET } from "pages/Home/Home.actions"
+import { HashConnect } from "hashconnect"
+import { CONNECT, SET_ACCOUNT_ID } from "pages/Home/Home.actions"
 
 export interface WalletState {
+  hashconnect?: HashConnect,
   topic: string,
   pairingString: string,
   privateKey: string,
   pairedWalletData: any,
-  pairedAccounts: any[]
+  pairedAccounts: string[]
 }
 
 const walletDefaultState: WalletState = {
+  hashconnect: undefined,
   topic: "",
   pairingString: "",
   privateKey: "",
@@ -18,23 +21,18 @@ const walletDefaultState: WalletState = {
 
 export function wallet(state = walletDefaultState, action: any): WalletState {
   switch (action.type) {
-    case SET_WALLET:
+    case SET_ACCOUNT_ID:
       return {
         ...state,
-        topic: action.topic,
-        pairingString: action.pairingString,
-        privateKey: action.privateKey,
-        pairedWalletData: action.pairedWalletData,
-        pairedAccounts: action.pairedAccounts,
+        pairedAccounts: [...state.pairedAccounts, action.accountId],
       }
     case CONNECT:
       return {
         ...state,
+        hashconnect: action.hashconnect,
         topic: action.topic,
         pairingString: action.pairingString,
         privateKey: action.privateKey,
-        pairedWalletData: action.pairedWalletData,
-        pairedAccounts: action.pairedAccounts,
       }
     default:
       return state

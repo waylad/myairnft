@@ -12,14 +12,7 @@ let appMetadata: HashConnectTypes.AppMetadata = {
 
 let hashconnect: HashConnect;
 
-export const SET_WALLET = 'SET_WALLET'
-export const setWallet = (wallet: any) => (dispatch: any, getState: any) => {
-  dispatch({
-    type: SET_WALLET,
-    wallet,
-  })
-}
-
+export const SET_ACCOUNT_ID = 'SET_ACCOUNT_ID'
 export const CONNECT = 'CONNECT'
 export const connect = () =>
   async (dispatch: any, getState: any) => {
@@ -30,6 +23,10 @@ export const connect = () =>
       hashconnect.pairingEvent.once((pairingData) => {
         pairingData.accountIds.forEach(id => {
             console.log('id', id)
+            dispatch({
+              type: SET_ACCOUNT_ID,
+              accountId: id,
+            })
         })
       })
     
@@ -46,6 +43,7 @@ export const connect = () =>
       
         dispatch({
           type: CONNECT,
+          hashconnect,
           privateKey: initData.privKey,
           topic: state.topic,
           pairingString

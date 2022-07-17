@@ -1,6 +1,7 @@
-import { CustomFee, CustomFixedFee, CustomFractionalFee, CustomRoyaltyFee, Hbar, HbarUnit, PublicKey, TokenCreateTransaction, TokenSupplyType, TokenType, TransactionReceipt } from '@hashgraph/sdk';
+import { AccountId, CustomFee, CustomFixedFee, CustomFractionalFee, CustomRoyaltyFee, Hbar, HbarUnit, PublicKey, TokenCreateTransaction, TokenSupplyType, TokenType, Transaction, TransactionId, TransactionReceipt } from '@hashgraph/sdk';
 import { showToaster } from 'app/App.components/Toaster/Toaster.actions'
 import { ERROR, SUCCESS } from 'app/App.components/Toaster/Toaster.constants'
+import { HashConnect, MessageTypes } from 'hashconnect';
 import { State } from 'reducers'
 
 export const FETCH_METADATA_REQUEST = 'FETCH_METADATA_REQUEST'
@@ -46,7 +47,7 @@ export const mint = (city: string) => async (dispatch: any, getState: any) => {
       type: MINT_REQUEST,
     })
 
-        // TODO
+    console.log('Minting...')
 
 
     dispatch(showToaster(SUCCESS, 'NFT sent to your wallet', 'Enjoy!'))
@@ -77,12 +78,22 @@ export const create = () => async (dispatch: any, getState: any) => {
       type: CREATE_REQUEST,
     })
 
+    console.log('Creating...')
+
+    const signingAcct = state.wallet.pairedAccounts[0]
+
     const tokenData = {
-      name: "AIR NFT",
-      symbol: "AIR",
+      name: "AIR NFT 74243532523535",
+      symbol: "AIR 74243532523535",
+      decimals: 0,
+      initialSupply: 0,
+
+      adminKey: signingAcct,
+      autoRenewAccountID: signingAcct,
+      expiry: 1000000000000,
+      expirationTime: 1000000000000,
       type: TokenType.NonFungibleUnique,
       supplyType: TokenSupplyType.Infinite,
-      initialSupply: 0,
       maxSupply: 10000,
       includeRoyalty: false,
       includeFixedFee: false,
@@ -96,10 +107,43 @@ export const create = () => async (dispatch: any, getState: any) => {
           min: 0
       },
       fallbackFee: 0,
-      decimals: 0
-  }
+    }
 
+    let accountInfo:any = await window.fetch("https://testnet.mirrornode.hedera.com/api/v1/accounts/" + signingAcct, { method: "GET" });
+    accountInfo = await accountInfo.json();
+    let customFees: CustomFee[] = [];
 
+    let key = await PublicKey.fromString(accountInfo.key.key)
+
+    let trans = await new TokenCreateTransaction()
+      .setTokenName(tokenData.name)
+      .setTokenSymbol(tokenData.symbol)
+      .setTokenType(tokenData.type)
+      .setDecimals(0)
+      .setSupplyType(tokenData.supplyType)
+      .setInitialSupply(tokenData.initialSupply)
+      .setTreasuryAccountId(signingAcct)
+      .setAutoRenewAccountId(signingAcct)
+      .setExpirationTime(new Date(2050,10,30))
+      .setAutoRenewPeriod(1000)
+      .setAdminKey(key)
+      .setSupplyKey(key)
+      .setWipeKey(key)
+      .setAutoRenewAccountId(signingAcct)
+        
+    let transBytes:Uint8Array = await makeBytes(trans, signingAcct);
+
+    let res = await sendTransaction(transBytes, signingAcct, state.wallet.topic, state.wallet.hashconnect!);
+
+    let responseData: any = {
+        response: res,
+        receipt: null
+    }
+
+    if(res.success) responseData.receipt = TransactionReceipt.fromBytes(res.receipt as Uint8Array);
+
+    console.log(responseData);
+      
     dispatch(showToaster(SUCCESS, 'Token Created', 'Enjoy!'))
 
     dispatch({
@@ -115,5 +159,28 @@ export const create = () => async (dispatch: any, getState: any) => {
   }
 }
 
+const makeBytes = async (trans: Transaction, signingAcctId: string) => {
+  let transId = TransactionId.generate(signingAcctId)
+  trans.setTransactionId(transId);
+  trans.setNodeAccountIds([new AccountId(3)]);
 
+  await trans.freeze();
+  
+  let transBytes = trans.toBytes();
 
+  return transBytes;
+}
+
+const sendTransaction = async (trans: Uint8Array, acctToSign: string, topic: string, hashconnect: HashConnect, return_trans: boolean = false) => {
+  const transaction: MessageTypes.Transaction = {
+      topic: topic,
+      byteArray: trans,
+      
+      metadata: {
+          accountToSign: acctToSign,
+          returnTransaction: return_trans,
+      }
+  }
+
+  return await hashconnect.sendTransaction(topic, transaction)
+}

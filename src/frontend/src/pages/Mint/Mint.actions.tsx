@@ -1,4 +1,4 @@
-import { AccountId, CustomFee, CustomFixedFee, CustomFractionalFee, CustomRoyaltyFee, Hbar, HbarUnit, PublicKey, TokenCreateTransaction, TokenSupplyType, TokenType, Transaction, TransactionId, TransactionReceipt } from '@hashgraph/sdk';
+import { AccountId, CustomFee, CustomFixedFee, CustomFractionalFee, CustomRoyaltyFee, Hbar, HbarUnit, PublicKey, TokenCreateTransaction, TokenMintTransaction, TokenSupplyType, TokenType, Transaction, TransactionId, TransactionReceipt } from '@hashgraph/sdk';
 import { showToaster } from 'app/App.components/Toaster/Toaster.actions'
 import { ERROR, SUCCESS } from 'app/App.components/Toaster/Toaster.constants'
 import { HashConnect, MessageTypes } from 'hashconnect';
@@ -49,6 +49,41 @@ export const mint = (city: string) => async (dispatch: any, getState: any) => {
 
     console.log('Minting...')
 
+    const metadata: any = {
+      "name": `My Air NFT ${city}`,
+      "description": `NFT that changes its illustration based on the real-time pollution level in ${city}`,
+      "image": "https://myairnft.com/favicon.png",
+      "properties": {
+        "city": city,
+      }
+    }
+
+    const data = {
+      tokenId: "0.0.47698143",
+      amount: 1,
+      isNft: true,
+      metadata
+    }
+
+    const signingAcct = state.wallet.pairedAccounts[0]
+
+    let trans = await new TokenMintTransaction()
+      .setTokenId(data.tokenId)
+      .addMetadata(new Uint8Array(Buffer.from(city))); //JSON.stringify(metadata)
+
+    let transBytes: Uint8Array = await makeBytes(trans, signingAcct);
+
+    let res = await sendTransaction(transBytes, signingAcct, state.wallet.topic, state.wallet.hashconnect!);
+
+    //handle response
+    let responseData: any = {
+      response: res,
+      receipt: null
+    }
+
+    if (res.success) responseData.receipt = TransactionReceipt.fromBytes(res.receipt as Uint8Array);
+
+    console.log(responseData);
 
     dispatch(showToaster(SUCCESS, 'NFT sent to your wallet', 'Enjoy!'))
 
@@ -83,8 +118,8 @@ export const create = () => async (dispatch: any, getState: any) => {
     const signingAcct = state.wallet.pairedAccounts[0]
 
     const tokenData = {
-      name: "AIR NFT 74243532523535",
-      symbol: "AIR 74243532523535",
+      name: "AIR NFT",
+      symbol: "AIR",
       decimals: 0,
       initialSupply: 0,
 
@@ -102,14 +137,14 @@ export const create = () => async (dispatch: any, getState: any) => {
       fixedFee: 0,
       fixedTokenId: "",
       fractionalFee: {
-          percent: 0,
-          max: 0,
-          min: 0
+        percent: 0,
+        max: 0,
+        min: 0
       },
       fallbackFee: 0,
     }
 
-    let accountInfo:any = await window.fetch("https://testnet.mirrornode.hedera.com/api/v1/accounts/" + signingAcct, { method: "GET" });
+    let accountInfo: any = await window.fetch("https://testnet.mirrornode.hedera.com/api/v1/accounts/" + signingAcct, { method: "GET" });
     accountInfo = await accountInfo.json();
     let customFees: CustomFee[] = [];
 
@@ -124,26 +159,26 @@ export const create = () => async (dispatch: any, getState: any) => {
       .setInitialSupply(tokenData.initialSupply)
       .setTreasuryAccountId(signingAcct)
       .setAutoRenewAccountId(signingAcct)
-      .setExpirationTime(new Date(2050,10,30))
+      .setExpirationTime(new Date(2050, 10, 30))
       .setAutoRenewPeriod(1000)
       .setAdminKey(key)
       .setSupplyKey(key)
       .setWipeKey(key)
       .setAutoRenewAccountId(signingAcct)
-        
-    let transBytes:Uint8Array = await makeBytes(trans, signingAcct);
+
+    let transBytes: Uint8Array = await makeBytes(trans, signingAcct);
 
     let res = await sendTransaction(transBytes, signingAcct, state.wallet.topic, state.wallet.hashconnect!);
 
     let responseData: any = {
-        response: res,
-        receipt: null
+      response: res,
+      receipt: null
     }
 
-    if(res.success) responseData.receipt = TransactionReceipt.fromBytes(res.receipt as Uint8Array);
+    if (res.success) responseData.receipt = TransactionReceipt.fromBytes(res.receipt as Uint8Array);
 
     console.log(responseData);
-      
+
     dispatch(showToaster(SUCCESS, 'Token Created', 'Enjoy!'))
 
     dispatch({
@@ -165,7 +200,7 @@ const makeBytes = async (trans: Transaction, signingAcctId: string) => {
   trans.setNodeAccountIds([new AccountId(3)]);
 
   await trans.freeze();
-  
+
   let transBytes = trans.toBytes();
 
   return transBytes;
@@ -173,13 +208,13 @@ const makeBytes = async (trans: Transaction, signingAcctId: string) => {
 
 const sendTransaction = async (trans: Uint8Array, acctToSign: string, topic: string, hashconnect: HashConnect, return_trans: boolean = false) => {
   const transaction: MessageTypes.Transaction = {
-      topic: topic,
-      byteArray: trans,
-      
-      metadata: {
-          accountToSign: acctToSign,
-          returnTransaction: return_trans,
-      }
+    topic: topic,
+    byteArray: trans,
+
+    metadata: {
+      accountToSign: acctToSign,
+      returnTransaction: return_trans,
+    }
   }
 
   return await hashconnect.sendTransaction(topic, transaction)

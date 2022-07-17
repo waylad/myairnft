@@ -1,12 +1,13 @@
 import { MINT_REQUEST, MINT_RESULT, MINT_ERROR } from 'pages/Mint/Mint.actions'
 
 export interface ContractState {
-  address?: string
+  address: string
   mintConfirmation?: number
   error?: any
 }
 
 const contractDefaultState: ContractState = {
+  address: "0.0.47698143",
   mintConfirmation: undefined,
   error: undefined,
 }

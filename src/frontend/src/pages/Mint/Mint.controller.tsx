@@ -13,9 +13,9 @@ export const Mint = () => {
   const { pairedAccounts } = useSelector((state: State) => state.wallet)
 
   const mintCallback = (city: string) => {
-    dispatch(create())
-    // if (city) dispatch(mint(city))
-    // else dispatch(showToaster(ERROR, 'Incorrect City', 'Please retry'))
+    // dispatch(create())
+    if (city) dispatch(mint(city))
+    else dispatch(showToaster(ERROR, 'Incorrect City', 'Please retry'))
   }
 
   const connectCallback = () => {

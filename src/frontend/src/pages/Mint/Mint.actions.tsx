@@ -85,6 +85,14 @@ export const mint = (city: string) => async (dispatch: any, getState: any) => {
 
     console.log(responseData);
 
+    const localStorageTokens = localStorage.tokens
+    if (localStorageTokens) {
+      let storedTokens = JSON.parse(localStorageTokens)
+      localStorage.tokens = JSON.stringify([...storedTokens, city])
+    } else {
+      localStorage.tokens = JSON.stringify([city])
+    }
+
     dispatch(showToaster(SUCCESS, 'NFT sent to your wallet', 'Enjoy!'))
 
     dispatch({

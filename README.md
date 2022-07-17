@@ -2,15 +2,15 @@
 
 ## Live Demo: https://myairnft.com
 
-## Demo Video: 
+## Demo Video: https://youtu.be/-UpxNPOD8sg
 
 # About My Air NFT
 
-## What is it?
+This a submission to the Hedera bounty  https://gitcoin.co/issue/29069 for the track `Tokenizing environmental/sustainability assets such as emissions, offsets, or RECs`.
+
+## What it does
 
 _My Air NFT_ allows you to freely mint a Dynamic NFT that will change automatically based on the pollution level of your city. It uses the API from [aqicn.org](https://aqicn.org/city/paris) to get levels of PM2.5, PM10, O3, and NO2 in your city and change the visualization of your NFT accordingly.
-
-This a submission to https://gitcoin.co/issue/29069 for the track `Tokenizing environmental/sustainability assets such as emissions, offsets, or RECs`.
 
 ## 3 custom illustrations
 
